@@ -55,14 +55,13 @@ public class MyService extends Service {
 		doTimerTask();
 	}
 	
-	 public void doTimerTask(){
-			
-		mTimerTask = new TimerTask() {
+	 public void doTimerTask(){			
+		 mTimerTask = new TimerTask() {
 			public void run() {
 				handler.post(new Runnable() {
 					public void run() {
 						nCounter++;
-						Log.d("TIMER", "TimerTask run " + nCounter);
+						Log.d(TAG, "TimerTask run " + nCounter);
 						amIFree();
 					}
 				});
@@ -70,7 +69,6 @@ public class MyService extends Service {
 		};
  
 			// public void schedule (TimerTask task, long delay, long period)
-
 		int periodInMins = 1;
 	    Calendar c = Calendar.getInstance();
 	    	    
@@ -79,16 +77,16 @@ public class MyService extends Service {
 	    		c.get(Calendar.DAY_OF_MONTH),
 	    		c.get(Calendar.HOUR_OF_DAY),
 	    		periodInMins - (c.get(Calendar.MINUTE)%periodInMins) + c.get(Calendar.MINUTE));
+	    Log.d(TAG, gc.getTime().toString());
 	    
-	    Log.d("TIMER", gc.getTime().toString());
-	    
-	    t.schedule(mTimerTask, gc.getTime(),periodInMins*60*1000);
+	    //t.schedule(mTimerTask, gc.getTime(),periodInMins*60*1000);
+	    t.schedule(mTimerTask, gc.getTime(),periodInMins*2000);
 		amIFree();
 	}
  
 	public void stopTask(){ 
 		if(mTimerTask!=null){ 
-			Log.d("TIMER", "timer canceled");
+			Log.d(TAG, "timer canceled");
 			mTimerTask.cancel();
 		}
 	}
@@ -123,11 +121,11 @@ public class MyService extends Service {
 					title = mCursor.getString(1);
 					start = mCursor.getLong(3);
 					System.out.println("CalendarID - " + mCursor.getString(0)+ " " +title+" on "+df.format(start)+" at "+tf.format(start) + " Avaliability "+ mCursor.getInt(6));
-					System.out.println("In the middle of something");
+					System.out.println("In the middle of something - " + mCursor.getInt(6));
 					
-					mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+					//mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 					
-					Log.d("TIMER", "In the middle of something\n" + "CalendarID - " + mCursor.getInt(0)+ " " +title+" on "+df.format(start)+" at "+tf.format(start));
+					Log.d(TAG, "In the middle of something - " + mCursor.getInt(6)+"\n" + "CalendarID - " + mCursor.getInt(0)+ " " +title+" on "+df.format(start)+" at "+tf.format(start));
 				} catch (Exception e) {
 				//ignore
 				}				
@@ -136,8 +134,8 @@ public class MyService extends Service {
 			mCursor.moveToNext();  
 		}
 		if (i==CalNames.length){
-			Log.d("TIMER", "The Calendar is Free");
-			mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+			Log.d(TAG, "The Calendar is Free");
+			//mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 		}
 	}
 }

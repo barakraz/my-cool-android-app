@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import com.example.common.*;
 
 public class ServicesDemo extends Activity implements OnClickListener {
   private static final String TAG = "ServicesDemo";
@@ -36,11 +37,20 @@ public class ServicesDemo extends Activity implements OnClickListener {
     switch (src.getId()) {
     case R.id.buttonStart:
       Log.d(TAG, "onClick: starting srvice");
-      startService(new Intent(this, MyService.class));
+      Common_Calendar cc = new Common_Calendar();
+      if(cc.amIFreeNow(getApplication())==false){
+    	  Common_AudioManager ca = new Common_AudioManager();
+    	  Log.d(TAG, "" + ca.setRinger(getApplication(), 1));
+      }
+      else{
+    	  Common_AudioManager ca = new Common_AudioManager();
+    	  Log.d(TAG, "" + ca.setRinger(getApplication(), 2));
+      }
+      //startService(new Intent(this, MyService.class));
       break;
     case R.id.buttonStop:
       Log.d(TAG, "onClick: stopping srvice");
-      stopService(new Intent(this, MyService.class));
+      //stopService(new Intent(this, MyService.class));
       break;
     }
   }
