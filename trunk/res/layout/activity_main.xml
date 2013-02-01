@@ -10,7 +10,9 @@
         android:gravity="center"
         android:padding="20dp"
         android:text="Services Demo"
-        android:textSize="20sp" />
+        android:textSize="20sp">
+    </TextView>
+
 
     <Button
         android:id="@+id/buttonStart"
