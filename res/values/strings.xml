@@ -4,5 +4,11 @@
     <string name="app_name">MyCoolApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
+    
+    <string-array name="planets_array">
+        <item>Silent</item>
+        <item>Vibrate</item>
+        <item>Normal</item>
+    </string-array>
 
 </resources>
