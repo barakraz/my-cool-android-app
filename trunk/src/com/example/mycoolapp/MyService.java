@@ -20,7 +20,7 @@ import com.example.mycoolapp.common.*;
 
 public class MyService extends Service {
 	private static final String TAG = "MyService";
-	
+	private Intent intentBroadcast;
 	final Handler handler = new Handler();
 	Timer t = new Timer();
 
@@ -37,6 +37,7 @@ public class MyService extends Service {
 		Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onCreate");
 		
+		intentBroadcast = new Intent(Common_lib.BROADCAST_ACTION);
 		mAudioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
 	}
 
@@ -54,33 +55,39 @@ public class MyService extends Service {
 		doTimerTask();
 	}
 	
-	 public void doTimerTask(){			
+	 public void doTimerTask(){
+		 		 
 		 TimerTask mTimerTask = new TimerTask() {
 			public void run() {
 				handler.post(new Runnable() {
 					public void run() {
 						nCounter++;
 						Log.d(TAG, "TimerTask run " + nCounter);
-						if (Common_Calendar.amIFreeNow(getApplication())){
-							Log.d(TAG, "Am I Free? " + true);
-							Common_AudioManager ca = new Common_AudioManager();
-							Log.d(TAG, "Ringer - " + ca.setRinger(getApplication(), 2));
+						
+						SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+						String freeMode = preferences.getString("freeMode", null);		 
+						String meetingMode = preferences.getString("meetingMode", null);
+						 
+						boolean amIFree = Common_Calendar.amIFreeNow(getApplication());
+						Log.d(TAG,"Am I Free? " + amIFree);
+						Common_AudioManager ca = new Common_AudioManager();
+						
+						if (amIFree){
+							ca.setRinger(getApplication(), Common_AudioManager.RingerMode.getCodeByString(freeMode));
 						}
 						else{
-							Log.d(TAG, "Am I Free? " + false);
-							Common_AudioManager ca = new Common_AudioManager();
-							Log.d(TAG, "Ringer - " + ca.setRinger(getApplication(), 1));
+							ca.setRinger(getApplication(), Common_AudioManager.RingerMode.getCodeByString(meetingMode));
 						}
 					}
 				});
 			}
 		}; 
-
+		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		int periodInMins = preferences.getInt("periodTime", 0);
 		Log.d(TAG,"periodInMins - " + periodInMins);
-	    Calendar c = Calendar.getInstance();
-	    	    
+		
+	    Calendar c = Calendar.getInstance();	    	    
 	    GregorianCalendar gc = new GregorianCalendar (c.get(Calendar.YEAR),
 	    		c.get(Calendar.MONTH),
 	    		c.get(Calendar.DAY_OF_MONTH),
@@ -93,7 +100,11 @@ public class MyService extends Service {
 	    else{
 	    	Log.d(TAG,"New Task is schedule");
 	    }
-	    Log.d(TAG, "Am I Free? - " + Common_Calendar.amIFreeNow(getApplication()));
+		
+		intentBroadcast.putExtra("serviceDetails", t.toString());
+    	sendBroadcast(intentBroadcast);
+
+	    mTimerTask.run();
 	}
  
 	public void stopTask(){ 
